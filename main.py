@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 
 url = 'https://www.uvek-gis.admin.ch/BFE/ogd/staging/'
 
-
 def extract_id(fileName):
     ogd_id = fileName.partition('_')[0]
     return ogd_id.replace('ogd', '')
