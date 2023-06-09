@@ -4,7 +4,16 @@ from bs4 import BeautifulSoup
 
 url = 'https://www.uvek-gis.admin.ch/BFE/ogd/staging/'
 
-def read_url(url):
+
+def extract_id(fileName):
+    ogd_id = fileName.partition('_')[0]
+    return ogd_id.replace('ogd', '')
+    
+
+def getInformation(url):
+    
+    #------------------------------------------------------------
+    # get file names
 
     csvList = []
 
@@ -16,9 +25,10 @@ def read_url(url):
     for i in x:
         file_name = i.extract().get_text()
         if '.csv' in file_name:
-          csvList.append(file_name)
+            if 'ogd' in file_name:
+                csvList.append([file_name, extract_id(file_name)])
 
-    df = pd.DataFrame(csvList, columns= ['fileNames'])
-    df.to_csv('files/fileNames.csv')
+    df = pd.DataFrame(csvList, columns= ['fileName', 'ogd_id'])
+    df.to_csv('files/info.csv')
 
-read_url(url)
+getInformation(url)
