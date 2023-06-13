@@ -10,24 +10,22 @@ def extract_id(fileName):
     
 
 def getInformation(url):
-    
-    #------------------------------------------------------------
-    # get file names
+  
+  csvList = []
+  url = url.replace(" ","%20")
+  req = Request(url)
+  a = urlopen(req).read()
+  soup = BeautifulSoup(a, 'html.parser')
+  x = (soup.find_all('a'))
+  
+  for elem in x:
+    stringElem = str(elem)
 
-    csvList = []
+    if 'csv' in stringElem:
+      fileName = re.search('href="(.*)"', stringElem).group(1)
+      csvList.append([fileName, extract_id(fileName)])
 
-    url = url.replace(" ","%20")
-    req = Request(url)
-    a = urlopen(req).read()
-    soup = BeautifulSoup(a, 'html.parser')
-    x = (soup.find_all('a'))
-    for i in x:
-        file_name = i.extract().get_text()
-        if '.csv' in file_name:
-            if 'ogd' in file_name:
-                csvList.append([file_name, extract_id(file_name)])
-
-    df = pd.DataFrame(csvList, columns= ['fileName', 'ogd_id'])
-    df.to_csv('files/info.csv')
+  df = pd.DataFrame(csvList, columns= ['fileName', 'ogd_id'])
+  df.to_csv('files/info.csv')
 
 getInformation(url)
