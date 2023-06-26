@@ -1,6 +1,7 @@
 import pandas as pd
 from urllib.request import Request, urlopen, urlretrieve
 from bs4 import BeautifulSoup
+import re
 
 url = 'https://www.uvek-gis.admin.ch/BFE/ogd/staging/'
 
