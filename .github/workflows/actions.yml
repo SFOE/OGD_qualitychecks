@@ -32,7 +32,10 @@ jobs:
           pip install pip install pandas
           
       - name: execute py script # run main.py
-        run: python main.py
+        env: # defin environment variables
+          ACCOUNT_NAME: ${{ secrets.ACCOUNT_NAME }}
+          KEY_PHRASE: ${{ secrets.KEY_PHRASE }}
+        run: python testServerConnection.py
         
       - name: commit and push changes
         run: |
