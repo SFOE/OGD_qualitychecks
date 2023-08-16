@@ -101,3 +101,11 @@ for index, row in df.iterrows():
     actionDict['destination'] = '-'
 
   toDoList.append(actionDict)
+
+# serializing json
+json_object = json.dumps(toDoList, indent=4)
+ 
+# writing to sample.json
+with open("files/output.json", "w") as outfile:
+    outfile.write(json_object)
+
