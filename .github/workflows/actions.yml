@@ -3,7 +3,7 @@ name: run main.py
 on: 
   workflow_dispatch:
   schedule:
-    - cron: '23 12 * * *'
+    - cron: '00 22 * * *'
 
 jobs:
   generate-json:
