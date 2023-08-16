@@ -1,1 +1,44 @@
-
+[
+    {
+        "fileName": "ogd35_schweizerische_elektrizitaetsbilanz_monatswerte.csv",
+        "origin": "https://www.uvek-gis.admin.ch/BFE/ogd/staging/ogd35_schweizerische_elektrizitaetsbilanz_monatswerte.csv",
+        "action": "replace",
+        "destination": "https://www.uvek-gis.admin.ch/BFE/ogd/35/datapackage.json"
+    },
+    {
+        "fileName": "ogd39_epec.csv",
+        "origin": "https://www.uvek-gis.admin.ch/BFE/ogd/staging/ogd39_epec.csv",
+        "action": "replace",
+        "destination": "https://www.uvek-gis.admin.ch/BFE/ogd/39/datapackage.json"
+    },
+    {
+        "fileName": "ogd47_vollzugsresultate_pw.csv",
+        "origin": "https://www.uvek-gis.admin.ch/BFE/ogd/staging/ogd47_vollzugsresultate_pw.csv",
+        "action": "delete",
+        "destination": "-"
+    },
+    {
+        "fileName": "ogd47_vollzugsresultate_pw_2020.csv",
+        "origin": "https://www.uvek-gis.admin.ch/BFE/ogd/staging/ogd47_vollzugsresultate_pw_2020.csv",
+        "action": "replace",
+        "destination": "https://www.uvek-gis.admin.ch/BFE/ogd/47/datapackage.json"
+    },
+    {
+        "fileName": "ogd61_vollzugsresultate_lnf.csv",
+        "origin": "https://www.uvek-gis.admin.ch/BFE/ogd/staging/ogd61_vollzugsresultate_lnf.csv",
+        "action": "replace",
+        "destination": "https://www.uvek-gis.admin.ch/BFE/ogd/61/datapackage.json"
+    },
+    {
+        "fileName": "ogd61_vollzugsresultate_lnf_2020.csv",
+        "origin": "https://www.uvek-gis.admin.ch/BFE/ogd/staging/ogd61_vollzugsresultate_lnf_2020.csv",
+        "action": "replace",
+        "destination": "https://www.uvek-gis.admin.ch/BFE/ogd/61/datapackage.json"
+    },
+    {
+        "fileName": "ogd90_potenzialstudien_waermenutzung.csv",
+        "origin": "https://www.uvek-gis.admin.ch/BFE/ogd/staging/ogd90_potenzialstudien_waermenutzung.csv",
+        "action": "delete",
+        "destination": "-"
+    }
+]
