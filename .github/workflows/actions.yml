@@ -30,8 +30,8 @@ jobs:
       - name: Run main.py
         run: python main.py
 
-      - name: Move generated JSON to files folder
-        run: mv output.json files/output.json
+      #- name: Move generated JSON to files folder
+      #  run: mv output.json files/output.json
 
       - name: Commit changes
         run: |
