@@ -2,7 +2,7 @@ name: run main.py
 
 on: 
   schedule:
-    - cron: "30 13 * * *"
+    - cron: "5 13 * * *"
 
 jobs:
   generate-json:
