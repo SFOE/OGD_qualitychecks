@@ -1,8 +1,11 @@
-name: trigger every 5 minutes
+name: run main.py
 
-on:
-  schedule:
-    - cron: "*/6 * * * *"
+on: 
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'branch name'
+        required: true
 
 jobs:
   generate-json:
