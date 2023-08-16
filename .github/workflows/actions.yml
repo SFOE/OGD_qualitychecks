@@ -58,7 +58,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
-
-      - name: github pages link
-        run: |
-          echo "GitHub Pages URL: https://sfoe.github.io/OGD_qualitychecks/}"
