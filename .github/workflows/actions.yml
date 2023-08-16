@@ -33,13 +33,17 @@ jobs:
       #- name: Move generated JSON to files folder
       #  run: mv output.json files/output.json
 
-      - name: Commit changes
+      - name: commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
-          git commit -m "Update generated JSON [skip ci]"
-          git push
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update generated JSON [skip ci]"
+            git push
+          fi
 
   deploy-pages:
     needs: generate-json
