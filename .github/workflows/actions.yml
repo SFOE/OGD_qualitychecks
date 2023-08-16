@@ -1,11 +1,8 @@
 name: run main.py
 
 on: 
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'branch name'
-        required: true
+  schedule:
+    - cron: "0 22 * * *"
 
 jobs:
   generate-json:
