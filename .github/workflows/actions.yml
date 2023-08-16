@@ -64,7 +64,4 @@ jobs:
 
       - name: github pages link
         run: |
-          echo "GitHub Pages URL: https://${{ env.REPO_OWNER }}.github.io/${{ env.REPO_NAME }}"
-        env:
-          REPO_OWNER: ${{ github.repository_owner }}
-          REPO_NAME: ${{ github.repository }}
+          echo "GitHub Pages URL: https://sfoe.github.io/OGD_qualitychecks/}"
