@@ -59,3 +59,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
+
+      - name: github pages link
+        run: |
+          echo "GitHub Pages URL: https://${{ env.REPO_OWNER }}.github.io/${{ env.REPO_NAME }}"
+        env:
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.repository }}
