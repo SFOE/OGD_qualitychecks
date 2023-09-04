@@ -7,10 +7,6 @@ on:
         description: 'branch name'
         required: true
 
-notifications:
-  email:
-    recipients:
-      - jana.stojanovic@bfe.admin.ch
 
 jobs:
   build:
