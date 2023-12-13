@@ -1,6 +1,6 @@
 import dash
 from dash import dcc, html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 from frictionless import validate
 from flask import Flask
 
@@ -9,7 +9,6 @@ server = Flask(__name__)
 app = dash.Dash(server=server, suppress_callback_exceptions=True)
 app.title = 'CSV-Quality'
 server = app.server
-
 
 # Translation dictionaries
 translations = {
@@ -43,27 +42,13 @@ translations = {
     }
 }
 
-# Global variable for language
-selected_language = "Deutsch"
-
-# Function to perform quality check
-def perform_quality_check(file):
-    try:
-        report = validate(file)
-        return report
-    except Exception as e:
-        return f"Error during validation: {e}"
-
 # Initialize the Dash app
-app = dash.Dash(__name__)
-
-# Define the layout of the app
 app.layout = html.Div([
     html.H1(id='app-title'),
     dcc.Dropdown(
         id='language-dropdown',
         options=[{'label': lang, 'value': lang} for lang in translations.keys()],
-        value=selected_language,
+        value="Deutsch",
     ),
     dcc.Upload(
         id='upload-data',
@@ -73,6 +58,16 @@ app.layout = html.Div([
     html.Div(id='output-message'),
     html.Div(id='output-report')
 ])
+
+
+# Function to perform quality check
+def perform_quality_check(file):
+    try:
+        report = validate(file)
+        return report
+    except Exception as e:
+        return f"Error during validation: {e}"
+
 
 # Define callbacks to update the content based on user interaction
 @app.callback(
@@ -84,19 +79,23 @@ app.layout = html.Div([
      Input('upload-data', 'contents')]
 )
 def update_content(selected_language, contents):
+    # Determine which input triggered the callback
+    input_id = dash.callback_context.triggered_id
     translation = translations[selected_language]
 
-    if contents is None:
+    if input_id == 'language-dropdown.value':
         return translation["title"], html.Button(translation["upload"]), '', ''
+    elif input_id == 'upload-data.contents':
+        # Rest of your logic for file upload
+        try:
+            report = perform_quality_check(contents)
+            if isinstance(report, str):
+                return translation["title"], html.Button(translation["upload"]), f"{translation['error']} {report}", ''
+            else:
+                return translation["title"], html.Button(translation["upload"]), translation["validation_complete"], str(report)
+        except Exception as e:
+            return translation["title"], html.Button(translation["upload"]), f"{translation['error']} {str(e)}", ''
 
-    try:
-        report = perform_quality_check(contents)
-        if isinstance(report, str):
-            return translation["title"], html.Button(translation["upload"]), f"{translation['error']} {report}", ''
-        else:
-            return translation["title"], html.Button(translation["upload"]), translation["validation_complete"], str(report)
-    except Exception as e:
-        return translation["title"], html.Button(translation["upload"]), f"{translation['error']} {str(e)}", ''
 
 # Run the app
 if __name__ == '__main__':
