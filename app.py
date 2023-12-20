@@ -1,15 +1,88 @@
 import streamlit as st
+import time
+import json
 from frictionless import validate
+from frictionless import Schema
 from mapping import ogdNbr_mapping
-
+from urllib.request import urlopen
 
 # function to perform quality check
 def perform_quality_check(file):
+
+    MAX_RETRIES = 2
+    DELAY_SECONDS = 1
+
     try:
-        report = validate(file)
-        return report
+        file_name = file.name
+
+        # save uploaded file locally
+        with open(file_name, 'wb') as f:
+            f.write(file.read())
+
+        # load the local file path
+        local_file_path = file_name  # Update this to your file path
+
+        if file_name in ogdNbr_mapping:
+            ID = ogdNbr_mapping[file_name]
+            datapackage_url = f"https://www.uvek-gis.admin.ch/BFE/ogd/{ID}/datapackage.json"
+
+            # fetching datapackage with retry logic
+            attempts = 0
+            while attempts < MAX_RETRIES:
+                try:
+                    #print(datapackage_url)
+                    response = urlopen(datapackage_url)
+                    
+                    if response.getcode() == 200:
+                        datapackage = response.read().decode('utf-8')
+                        datapackage_json = json.loads(datapackage)
+
+                        # find schema corresponding to uploaded file
+                        uploaded_file_schema = None
+
+                        for resource in datapackage_json.get('resources', []):
+
+                            print('resource', resource)
+
+                            print('path' in list(resource.keys()))
+
+                            if 'path' in list(resource.keys()) and file_name in resource['path']:
+                                print('found')
+                                uploaded_file_schema = resource['schema']
+                                break
+
+
+                        if uploaded_file_schema:
+
+                            # convert dictionary schema into frictionless schema object
+                            schema = Schema(uploaded_file_schema)
+
+                            # perform validation using schema matched to uploaded file
+                            report = validate(file, schema=schema)
+                            
+                            return report
+
+                        return f"No schema found for the uploaded file '{file_name}' in the datapackage."
+
+                except Exception as e:
+                    print(f"Error fetching datapackage: {e}")
+
+                attempts += 1
+                # exponential backoff delay
+                time.sleep(DELAY_SECONDS * attempts)  
+
+            return f"Failed to fetch datapackage after multiple attempts."
+
+        else:
+            return f"File '{file_name}' not found in the mapping."
+
     except Exception as e:
         return f"Error during validation: {e}"
+
+
+
+
+
 
 #-------------------------------------------------------------------------------
 # translation dictionaries
@@ -80,7 +153,7 @@ def main():
                 st.error(f"{translation['error']} {report}")
             else:
                 st.success(translation["validation_complete"])
-                st.write(report)
+                st.write(report.valid)
 
 if __name__ == "__main__":
     main()
