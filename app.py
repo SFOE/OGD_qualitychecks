@@ -5,22 +5,15 @@ from frictionless import validate
 from frictionless import Schema
 from mapping import ogdNbr_mapping
 from urllib.request import urlopen
+import pandas as pd
 
 # function to perform quality check
-def perform_quality_check(file):
+def perform_quality_check(frame, file_name):
 
     MAX_RETRIES = 2
     DELAY_SECONDS = 1
 
     try:
-        file_name = file.name
-
-        # save uploaded file locally
-        with open(file_name, 'wb') as f:
-            f.write(file.read())
-
-        # load the local file path
-        local_file_path = file_name  # Update this to your file path
 
         if file_name in ogdNbr_mapping:
             ID = ogdNbr_mapping[file_name]
@@ -42,12 +35,11 @@ def perform_quality_check(file):
 
                         for resource in datapackage_json.get('resources', []):
 
-                            print('resource', resource)
-
-                            print('path' in list(resource.keys()))
+                            #print('resource', resource)
+                            #print('path' in list(resource.keys()))
 
                             if 'path' in list(resource.keys()) and file_name in resource['path']:
-                                print('found')
+                                #print('found')
                                 uploaded_file_schema = resource['schema']
                                 break
 
@@ -55,10 +47,20 @@ def perform_quality_check(file):
                         if uploaded_file_schema:
 
                             # convert dictionary schema into frictionless schema object
+
+
+                            for field in uploaded_file_schema['fields']:
+                                if field['type'] == 'year':
+                                    field['type'] = 'integer'
                             schema = Schema(uploaded_file_schema)
 
+                        
+
+                            
+                            print(schema)
+
                             # perform validation using schema matched to uploaded file
-                            report = validate(file, schema=schema)
+                            report = validate(frame, schema=schema)
                             
                             return report
 
@@ -74,13 +76,21 @@ def perform_quality_check(file):
             return f"Failed to fetch datapackage after multiple attempts."
 
         else:
-            return f"File '{file_name}' not found in the mapping."
+            return f"There is no datapackage for the file '{file_name}' "
 
     except Exception as e:
         return f"Error during validation: {e}"
 
 
+# get cleaner error messages
+def get_error_messages(report):
 
+    text = ''
+    
+    for err in report.tasks[0].errors:
+        text = text + err.title + ':\n' + err.message + '\n\n'
+
+    return text
 
 
 
@@ -94,6 +104,7 @@ translations = {
         "check_button": "Überprüfen",
         "error": "Fehler während der Validierung:",
         "validation_complete": "Validierung abgeschlossen!",
+        "valid": "Das Dokument ist gültig.",
     },
     "Français": {
         "title": "Contrôle de qualité CSV avec Frictionless",
@@ -102,6 +113,7 @@ translations = {
         "check_button": "Vérifier",
         "error": "Erreur de validation:",
         "validation_complete": "Validation terminée !",
+        "valid": "Le document est valide.",
     },
     "Italiano": {
         "title": "Controllo qualità CSV con Frictionless",
@@ -110,6 +122,7 @@ translations = {
         "check_button": "Controllo",
         "error": "Errore durante la validazione:",
         "validation_complete": "Validazione completata!",
+        "valid": "Il documento è valido.",
     },
     "English": {
         "title": "CSV Quality Check with Frictionless",
@@ -118,6 +131,7 @@ translations = {
         "check_button": "Check",
         "error": "Error during validation:",
         "validation_complete": "Validation complete!",
+        "valid": "The document is valid.",
     }
 }
 #-------------------------------------------------------------------------------
@@ -145,15 +159,22 @@ def main():
 
     if uploaded_file is not None:
         st.write(translation["uploaded_success"])
+
+        dataframe = pd.read_csv(uploaded_file, skip_blank_lines =False)
+        st.write(dataframe)
         if st.button(translation["check_button"]):
             progress_bar = st.progress(0)
-            report = perform_quality_check(uploaded_file)
+            report = perform_quality_check(dataframe, uploaded_file.name)
 
             if isinstance(report, str):
                 st.error(f"{translation['error']} {report}")
             else:
-                st.success(translation["validation_complete"])
-                st.write(report.valid)
+                if report.valid:
+                    st.success(translation["validation_complete"])
+                    st.success(translation["valid"])
+                else:
+                    st.error(translation["validation_complete"])
+                    st.error(get_error_messages(report))
 
 if __name__ == "__main__":
     main()
