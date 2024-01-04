@@ -1,11 +1,12 @@
-import streamlit as st
 import time
 import json
+import pandas as pd
+import streamlit as st
 from frictionless import validate
 from frictionless import Schema
 from mapping import ogdNbr_mapping
 from urllib.request import urlopen
-import pandas as pd
+
 
 # function to perform quality check
 def perform_quality_check(frame, file_name):
@@ -160,7 +161,7 @@ def main():
     if uploaded_file is not None:
         st.write(translation["uploaded_success"])
 
-        dataframe = pd.read_csv(uploaded_file, skip_blank_lines =False)
+        dataframe = pd.read_csv(uploaded_file, sep='[;,]', engine='python', skip_blank_lines=False)
         st.write(dataframe)
         if st.button(translation["check_button"]):
             progress_bar = st.progress(0)
