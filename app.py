@@ -17,6 +17,8 @@ def perform_quality_check(frame, file_name):
     try:
 
         if file_name in ogdNbr_mapping:
+
+            # get OGD# from the mapping file to load the correct datapackage
             ID = ogdNbr_mapping[file_name]
             datapackage_url = f"https://www.uvek-gis.admin.ch/BFE/ogd/{ID}/datapackage.json"
 
@@ -24,41 +26,39 @@ def perform_quality_check(frame, file_name):
             attempts = 0
             while attempts < MAX_RETRIES:
                 try:
-                    #print(datapackage_url)
                     response = urlopen(datapackage_url)
                     
                     if response.getcode() == 200:
                         datapackage = response.read().decode('utf-8')
+                        # load datapackage
                         datapackage_json = json.loads(datapackage)
-
-                        # find schema corresponding to uploaded file
+                        
                         uploaded_file_schema = None
 
+                        # find schema corresponding to uploaded file (some datapackages contain schemas for multiple files)
                         for resource in datapackage_json.get('resources', []):
 
-                            #print('resource', resource)
-                            #print('path' in list(resource.keys()))
-
                             if 'path' in list(resource.keys()) and file_name in resource['path']:
-                                #print('found')
                                 uploaded_file_schema = resource['schema']
                                 break
 
 
                         if uploaded_file_schema:
 
-                            # convert dictionary schema into frictionless schema object
-
-
+                            # pandas has no dtype 'year' --> so it is changed to 'integer'
                             for field in uploaded_file_schema['fields']:
                                 if field['type'] == 'year':
                                     field['type'] = 'integer'
+
+                            # convert dictionary schema into frictionless schema object
                             schema = Schema(uploaded_file_schema)
 
                         
-
-                            
-                            print(schema)
+                            # change the data type of the first column to 'float' if all dtypes are 'int'
+                            # for some reason, if all dtypes of frame are 'int', it throws an error even if the CSV is valid
+                            # to escape that, change the type of the first column
+                            if all(frame.dtypes == 'int64'):
+                                frame.iloc[:, 0] = frame.iloc[:, 0].astype(float)
 
                             # perform validation using schema matched to uploaded file
                             report = validate(frame, schema=schema)
@@ -154,8 +154,10 @@ def main():
     # display content based on selected language
     translation = translations[st.session_state.language]
 
+    # set title
     st.title(translation["title"])
 
+    # create upload element
     uploaded_file = st.file_uploader(translation["upload"], type=["csv"])
 
     if uploaded_file is not None:
@@ -170,9 +172,11 @@ def main():
             if isinstance(report, str):
                 st.error(f"{translation['error']} {report}")
             else:
+                # file is valid
                 if report.valid:
                     st.success(translation["validation_complete"])
                     st.success(translation["valid"])
+                # file is not valid
                 else:
                     st.error(translation["validation_complete"])
                     st.error(get_error_messages(report))
