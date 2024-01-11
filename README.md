@@ -21,5 +21,5 @@ The structure of the code is as follows: the CSV content is loaded in a _pd.Data
 While testing we found out that even if the CSV is _valid_, it is recognized as _invalid_ if all the columns are of datatype _int64_. But if you change the column dtype of a random column to _float_, The
 
 Attempts to improve it:
-- Store the CSV file "locally" using the path `file_name.csv`, **failed: "Source for frictionless.validate() is empty"**
+- Store the CSV file "locally" using the path `file_name.csv` and access & use it with the datapackage. **failed: "Source for frictionless.validate() is empty"**
 - Save the CSV file in a temporary directory and use the datapackage. **failed: "frictionless.validate() cannot access source form unsecure origin"**
