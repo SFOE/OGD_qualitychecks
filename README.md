@@ -1,7 +1,7 @@
 # CSV Quality Check with Frictionless
-This [Streamlit app](https://appfrictionless-test0.streamlit.app/) enables users to perform quality checks on CSV files of SFOE OGD publications using the Frictionless framework. The app allows for easy validation of CSV files against defined schemas (extracted from corresponding `datapackage.json`) found on _uvek-gis_, ensuring data integrity and adherence to specified formats.
+This [Streamlit app](https://bfe-ogd-quality-process.streamlit.app/) enables users to perform quality checks on CSV files of SFOE OGD publications using the Frictionless framework. The app allows for easy validation of CSV files against defined schemas (extracted from corresponding `datapackage.json`) found on _uvek-gis_, ensuring data integrity and adherence to specified formats.
 
-You can find the app [here](https://appfrictionless-test0.streamlit.app/)
+You can find the app [here](https://bfe-ogd-quality-process.streamlit.app/)
 
 ## Feautres
 - **File Upload**: Users can upload CSV files for validation directly through the Streamlit interface.
